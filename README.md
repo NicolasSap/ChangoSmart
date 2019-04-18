@@ -8,5 +8,6 @@
 * Sapaya, Nicolás Martín
 * Zambianchi, Nicolás Ezequiel
 
-1- Auto Inteligente.
-2- Alimentador de Perros.
+### Ideas
+* 1- Auto Inteligente.
+* 2- Alimentador de Perros.
