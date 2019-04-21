@@ -1,1 +1,1 @@
-﻿*Aquí se encuentra la documentación final.
+﻿Aquí se encuentra la documentación final.
