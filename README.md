@@ -10,4 +10,9 @@
 
 ### Ideas
 * 1- Auto Inteligente.
+Será capaz de:
+  - Ser comando desde la app.
+  - Manejarse automáticamente.
+  - Evitar colisiones.
+  - Estacionar sólo.
 * 2- Alimentador de Perros.
