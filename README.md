@@ -15,4 +15,4 @@
   - Se podrán visualizar los productos en una lista desde la app.
   - Se podrán agregar o quitar los productos de la lista.
   - Los productos se scanearán desde la app.
-  - Se podrá controlar la temperatura del chango desde la app.
+  - Se podrá visualizar la temperatura del chango desde la app.
