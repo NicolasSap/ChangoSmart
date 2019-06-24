@@ -56,7 +56,7 @@ unsigned long timeToSense = 300;  // Tiempo de espera entre senso de barrera, 10
 
 unsigned long pTimeTemp = 0; // Tiempo Temperatura anterior 0
 unsigned long cTimeTemp = 0;  // Tiempo Temperatura actual 0
-unsigned long timeToTemp = 5000; // Tiempo de espera entre senso de temperatura
+unsigned long timeToTemp = 10000; // Tiempo de espera entre senso de temperatura
 
 
 void setup() {
@@ -97,7 +97,7 @@ void loop() {
       // PARAMOS MOTOR, RUEDA DERECHA, ENCIENDO LED PARADO Y AVISA APP
       stopped = 1;
       digitalWrite(LED_VERDE,HIGH);
-      BT.print("NO AVANZAR");
+      BT.print("N");
       pararMotor();
       if (servo.read() != 90) {
         irDerecho();
@@ -105,7 +105,7 @@ void loop() {
     } else if (distancia >= distanciaStop && stopped == 1) {
       // APAGO LED PARADO Y AVISA APP
       digitalWrite(LED_VERDE,LOW);
-      BT.print("AVANZAR");
+      BT.print("G");
       forward = 0;
       stopped = 0;    
     }
@@ -121,7 +121,7 @@ void loop() {
       int valorIn = digitalRead(BARRERA_IN);
       int valorOut = digitalRead(A1);
       if(valorIn == 1 && puso == 0) {
-        BT.print("IN");// SE CORTO LA BARRERA
+        BT.print("E");// SE CORTO LA BARRERA
         //Serial.print("BIN PUSO\n");
         puso = 1;
       } else if (valorIn == 0 && puso == 1) {
@@ -129,7 +129,7 @@ void loop() {
         puso = 0;
       }
       if(valorOut == 1 && saco == 0) {
-        BT.print("OUT");// SE CORTO LA BARRERA
+        BT.print("O");// SE CORTO LA BARRERA
         //Serial.print("BOUT SACO\n");
         saco = 1;
       } else if (valorOut == 0 && saco == 1) {
@@ -139,15 +139,15 @@ void loop() {
       // Almacenamos el último momento en que hemos actuado 
       previousMillis = currentMillis; 
     } 
-    
+    /*
     // Si ha pasado el tiempo establecido, medimos la temperatura
     if(cTimeTemp - pTimeTemp >= timeToTemp) {
       temperatura = calcularTemperatura(); 
-      String stringOne =  String(temperatura, 2); // convierte a string
+      String stringOne =  String(temperatura, 0); // convierte a string
       BT.print(stringOne);  // no puedo hacer esto porque no te deja mandar string
       // Almacenamos el último momento en que hemos actuado 
       pTimeTemp = cTimeTemp; 
-    }
+    }*/
   } else { // Si se esta moviendo reseteo contadores
     currentMillis = 0;
     cTimeTemp = 0;
