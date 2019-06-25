@@ -13,7 +13,7 @@ SoftwareSerial BT(2,3);    // Definimos los pines RX y TX del Arduino conectados
 #define ECHO 6
 // Barreras
 //#define BARRERA_OUT 7 ES A1
-#define BARRERA_IN 8
+//#define BARRERA_IN 8 ES A3
 // Servo
 #define PSERVO 9
 // Pines utilizados MOTORES
@@ -69,7 +69,7 @@ void setup() {
   pinMode(LED_VERDE, OUTPUT);
   pinMode(ECHO, INPUT);     // recibe
   pinMode(TRIGGER, OUTPUT); // emite
-  pinMode(BARRERA_IN, INPUT);
+  pinMode(A3, INPUT); // BARRERA_IN
   pinMode(A1, INPUT); // BARRERA OUT
   servo.attach(PSERVO); // Vincular servo con el pin 9
   pinMode(AVANZA_DER, OUTPUT);
@@ -118,7 +118,7 @@ void loop() {
     // Si ha pasado el tiempo establecido, ejecutamos la acción
     if(currentMillis - previousMillis >= timeToSense) {
       // Codigo para ver si la barrera_OUT fue cortada o no
-      int valorIn = digitalRead(BARRERA_IN);
+      int valorIn = digitalRead(A3);
       int valorOut = digitalRead(A1);
       if(valorIn == 1 && puso == 0) {
         BT.print("E");// SE CORTO LA BARRERA
@@ -139,15 +139,17 @@ void loop() {
       // Almacenamos el último momento en que hemos actuado 
       previousMillis = currentMillis; 
     } 
-    /*
+    
     // Si ha pasado el tiempo establecido, medimos la temperatura
     if(cTimeTemp - pTimeTemp >= timeToTemp) {
       temperatura = calcularTemperatura(); 
       String stringOne =  String(temperatura, 0); // convierte a string
-      BT.print(stringOne);  // no puedo hacer esto porque no te deja mandar string
+      //BT.print(stringOne);  
+      BT.print(stringOne[0]);  
+      BT.print(stringOne[1]);  
       // Almacenamos el último momento en que hemos actuado 
       pTimeTemp = cTimeTemp; 
-    }*/
+    }
   } else { // Si se esta moviendo reseteo contadores
     currentMillis = 0;
     cTimeTemp = 0;
