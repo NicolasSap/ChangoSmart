@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:orientation="vertical"
+    tools:context=".productos.TodosProductos"
+    tools:showIn="@layout/activity_todos_productos">
+
+    <EditText
+        android:id="@+id/searchFilter2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="60dp"
+        android:hint="BUSCAR"
+        android:text=""
+        android:textColor="#000000" />
+
+    <ListView
+        android:id="@+id/listViewTodosProductos"
+        android:divider="@android:color/black"
+        android:dividerHeight="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

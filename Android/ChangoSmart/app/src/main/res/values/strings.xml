@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">ChangoSmart</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_cancelar">Cancelar</string>
+    <string name="title_conducir_chango">Dirigir Chango</string>
+    <string name="title_activity_mis_listas">Mis Listas Creadas</string>
+    <string name="title_activity_crear_lista">Crear Nueva Lista</string>
+    <string name="title_activity_crear_lista_vacia">Crear Vacia</string>
+    <string name="title_activity_agregar_productos">Agregar Productos</string>
+    <string name="title_activity_compra_express">Compra Express</string>
+    <string name="title_activity_agregar_productos_agregar">Agregar</string>
+    <string name="title_mis_listas_de_compra">Mis Listas de Compra</string>
+    <string name="string_boton_compra_express">Iniciar Compra Express</string>
+    <string name="title_activity_anadir_producto">Añadir Producto</string>
+    <string name="title_alert_dialog_lista">Elija una opcion</string>
+    <string-array name="tresOpcionesAlertDialog">
+        <item>Iniciar Compra</item>
+        <item>Editar Lista</item>
+        <item>Eliminar Lista</item>
+    </string-array>
+    <string name="title_activity_todos_productos">Todos Productos</string>
+    <string name="title_activity_comprar_por_lista">Comprar Por Lista</string>
+</resources>

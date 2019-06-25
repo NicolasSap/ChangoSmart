@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.changosmart">
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher_cart"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_cart_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".compras.porLista.ComprarPorLista"
+            android:label="@string/title_activity_comprar_por_lista"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".productos.TodosProductos"
+            android:label="@string/title_activity_todos_productos"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".QR.QR"
+            android:label="QR"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".compras.express.AnadirProductoExpress"
+            android:label="@string/title_activity_anadir_producto"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".listasCompras.misListas.CrearLista"
+            android:label="@string/title_activity_crear_lista"
+            android:theme="@style/AppTheme.NoActionBar" />
+		<activity
+            android:name=".listasCompras.detalleListas.DetalleLista"
+            android:label="@string/title_activity_anadir_producto"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".listasCompras.misListas.MisListas"
+            android:label="@string/title_activity_mis_listas"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".chango.Chango"
+            android:label="Conducir Chango"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".bluetooth.BluetoothSettings"
+            android:label="Administrar Bluetooth"
+            android:theme="@style/AppTheme.NoActionBar" />
+    </application>
+
+</manifest>

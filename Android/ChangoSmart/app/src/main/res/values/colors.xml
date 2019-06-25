@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="barColor">#C91B31</color>
+    <color name="buttonColor">#109f21</color>
+    <color name="cancelButtonColor">#f64545</color>
+    <color name="mainTitlesColor">#109f21</color>
+    <color name="badgeColor">#C91B31</color>
+    <color name="backgroundActivity">#E0DDDD</color>
+    <color name="backgroundColor">#FFFFFF</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorItemLista">#CDFACD</color>
+    <color name="colorAccent">#B62121</color>
+</resources>

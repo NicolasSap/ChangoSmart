@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CDFACD">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="75dp" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="36dp" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="38dp" />
+
+    <TextView
+        android:id="@+id/textViewDetalleProducto"
+        android:layout_width="203dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="16dp"
+        android:text="Nombre_Producto"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/textViewDetalleCategoria"
+        app:layout_constraintStart_toStartOf="@+id/guideline8" />
+
+    <TextView
+        android:id="@+id/textViewDetalleCategoria"
+        android:layout_width="136dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/badgeColor"
+        android:gravity="center"
+        android:text="Categoria_Producto"
+        android:textColor="#FFFFFF"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toTopOf="@+id/guideline4"
+        app:layout_constraintStart_toStartOf="@+id/guideline8" />
+
+    <TextView
+        android:id="@+id/textViewDetallePrecio"
+        android:layout_width="85dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="220dp"
+        android:layout_marginBottom="36dp"
+        android:gravity="center"
+        android:text="Precio"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewDetalleCategoria"
+        app:layout_constraintStart_toStartOf="@+id/textViewDetalleProducto" />
+
+    <TextView
+        android:id="@+id/textViewDetalleCantComprar"
+        android:layout_width="137dp"
+        android:layout_height="19dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+        android:text="Cantidad a comprar"
+        app:layout_constraintEnd_toStartOf="@+id/guideline9"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/textViewDetalleCategoria"
+        app:layout_constraintTop_toBottomOf="@+id/textViewDetalleProducto" />
+</android.support.constraint.ConstraintLayout>
