@@ -485,6 +485,15 @@ public class AnadirProductoExpress extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("", "[OnDestoy]: Dejo de verificar por los receivers");
+        try {
+            unregisterReceiver(myReceiver);
+        }catch(Exception ex){}
+    }
+
+    @Override
     public void onBackPressed() {
         if(! listaProductos.isEmpty()) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(AnadirProductoExpress.this);

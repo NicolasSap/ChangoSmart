@@ -305,6 +305,15 @@ public class Chango extends AppCompatActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("", "[OnDestoy]: Dejo de verificar por los receivers");
+        try {
+            unregisterReceiver(myReceiver);
+        }catch(Exception ex){}
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 18) {

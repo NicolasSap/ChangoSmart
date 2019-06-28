@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -419,6 +420,15 @@ public class ComprarPorLista extends AppCompatActivity{
         }
     };
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("", "[OnDestoy]: Dejo de verificar por los receivers");
+        try {
+            unregisterReceiver(myReceiver);
+        }catch(Exception ex){}
+    }
+    
     @Override
     public void onBackPressed() {
         if(!listaProductosComprados.isEmpty()) {
