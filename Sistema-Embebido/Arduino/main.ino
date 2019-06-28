@@ -12,8 +12,8 @@ SoftwareSerial BT(2,3);    // Definimos los pines RX y TX del Arduino conectados
 #define TRIGGER 5
 #define ECHO 6
 // Barreras
-//#define BARRERA_OUT 7 ES A1
-//#define BARRERA_IN 8 ES A3
+//BARRERA_OUT ES A1
+//BARRERA_IN ES A3
 // Servo
 #define PSERVO 9
 // Pines utilizados MOTORES
@@ -29,7 +29,7 @@ SoftwareSerial BT(2,3);    // Definimos los pines RX y TX del Arduino conectados
 #define IZQUIERDA 'I'
 #define RETROCEDER 'B' // DE BACKWARD
 #define STOP 'S'
-#define LED_FRONT 'L'
+#define LED_FRONT 'L' // ACTIVADO POR SENSOR LUMINICO ANDROID
 
 // Constantes y Variables
 Servo servo;
@@ -122,18 +122,14 @@ void loop() {
       int valorOut = digitalRead(A1);
       if(valorIn == 1 && puso == 0) {
         BT.print("E");// SE CORTO LA BARRERA
-        //Serial.print("BIN PUSO\n");
         puso = 1;
       } else if (valorIn == 0 && puso == 1) {
-        //Serial.print("No IN\n");
         puso = 0;
       }
       if(valorOut == 1 && saco == 0) {
         BT.print("O");// SE CORTO LA BARRERA
-        //Serial.print("BOUT SACO\n");
         saco = 1;
       } else if (valorOut == 0 && saco == 1) {
-        //Serial.print("No OUT\n");
         saco = 0;
       }
       // Almacenamos el último momento en que hemos actuado 
@@ -143,8 +139,7 @@ void loop() {
     // Si ha pasado el tiempo establecido, medimos la temperatura
     if(cTimeTemp - pTimeTemp >= timeToTemp) {
       temperatura = calcularTemperatura(); 
-      String stringOne =  String(temperatura, 0); // convierte a string
-      //BT.print(stringOne);  
+      String stringOne =  String(temperatura, 0); // convierte a string  
       BT.print(stringOne[0]);  
       BT.print(stringOne[1]);  
       // Almacenamos el último momento en que hemos actuado 
@@ -157,7 +152,6 @@ void loop() {
   
   if(BT.available()) {    // Si llega un dato por el puerto BT, me fijo que accion realizar
     comando = BT.read();
-    Serial.print(comando);
     switch (comando) {
         case AVANZAR:
                     avanzar();
@@ -183,20 +177,15 @@ void loop() {
                     break;
         case LED_FRONT:
                     if (digitalRead(A2)) {
-                      digitalWrite(A2,LOW);
+                      digitalWrite(A2,LOW); // Si esta prendido, apago
                     } else {
-                      digitalWrite(A2,HIGH);
+                      digitalWrite(A2,HIGH); // Si esta apagado, prendo
                     }
                     break;
         default:
                 Serial.write("ERROR COMANDO\n");
                 break;
     }
-  }
-  
-  // Esto se puede sacar
-  if(Serial.available()) {  // Si llega un dato por el monitor serial se envía al puerto BT
-     BT.print(Serial.read());
   }
 }
 
