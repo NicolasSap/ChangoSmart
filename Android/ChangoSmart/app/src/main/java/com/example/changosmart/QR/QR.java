@@ -128,6 +128,8 @@ public class QR extends AppCompatActivity {
                     }
                 }
             }
+
+
         });
     }
 }

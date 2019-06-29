@@ -54,6 +54,7 @@ public class AnadirProductoExpress extends AppCompatActivity {
     private TextView precioParcial;
     private TextView temperaturaTextView;
     private volatile int cantIngresar;
+    private boolean entre = false;
 
     private Bluetooth bluetoothInstance;
 
@@ -317,27 +318,27 @@ public class AnadirProductoExpress extends AppCompatActivity {
             String text = intent.getStringExtra("theMessage");
             Log.e("Entrada", text );
             if (text.equals("E")){
-                cantIngresar--;
-                Toast toast1 =
-                        Toast.makeText(getApplicationContext(), "Ingresó un producto al chango. Restan "+ cantIngresar , Toast.LENGTH_SHORT);
+                if(cantIngresar > 0) {
+                    cantIngresar--;
+                    Toast toast1 =
+                            Toast.makeText(getApplicationContext(), "Ingresó un producto al chango. Restan " + cantIngresar, Toast.LENGTH_SHORT);
 
-                toast1.setGravity(Gravity.CENTER,0,0);
-                toast1.show();
-            }else if (text.equals("O")){
-                Toast toast1 =
-                        Toast.makeText(getApplicationContext(), "Salió un producto del chango." , Toast.LENGTH_SHORT);
-                toast1.setGravity(Gravity.CENTER,0,0);
-                toast1.show();
-
-                if(qrAbierto == false){
-                    qrAbierto = true;
-                    Intent openQr = new Intent(AnadirProductoExpress.this, QR.class);
-                    openQr.putExtra("btInstance", bluetoothInstance);
-                    startActivityForResult(openQr, REQUEST_CODE_QR_QUITAR);
+                    toast1.show();
                 }
+            }else if (text.equals("O")){
+                if(! listaProductos.isEmpty()) {
+                    Toast toast1 =
+                            Toast.makeText(getApplicationContext(), "Salió un producto del chango.", Toast.LENGTH_SHORT);
+                    toast1.setGravity(Gravity.CENTER, 0, 0);
+                    toast1.show();
 
-
-
+                    if (qrAbierto == false) {
+                        qrAbierto = true;
+                        Intent openQr = new Intent(AnadirProductoExpress.this, QR.class);
+                        openQr.putExtra("btInstance", bluetoothInstance);
+                        startActivityForResult(openQr, REQUEST_CODE_QR_QUITAR);
+                    }
+                }
             }else if (text.matches("[0-9]")){
                 temperaturaStringBuilder.append(text);
                 if(temperaturaStringBuilder.length() >= 2 ){
@@ -362,19 +363,24 @@ public class AnadirProductoExpress extends AppCompatActivity {
                 float y = event.values[1];
                 float z = event.values[2];
 
+
+
                 mAccelLast = mAccelCurrent;
                 mAccelCurrent = (float) Math.sqrt((double) (x * x + y * y + z * z));
                 float delta = mAccelCurrent - mAccelLast;
                 mAccel = mAccel * 0.9f + delta; // perform low-cut filter
 
-                if (mAccel > 15 && abs(abs(x)-abs(prevX))>=20 ) {
+                if (mAccel > 15 && abs(abs(x)-abs(prevX))>=20 && entre == false) {
+                    entre = true;
                     prevX=x;
-                    if(qrAbierto == false) {
+
+                    if(qrAbierto == false && bluetoothInstance.getPairDevice() != null) {
                         qrAbierto = true;
                         Intent openQr = new Intent(AnadirProductoExpress.this, QR.class);
                         openQr.putExtra("btInstance", bluetoothInstance);
                         startActivityForResult(openQr, REQUEST_CODE_QR);
                     }
+                    entre = false;
                 }
             }
         }
@@ -435,9 +441,7 @@ public class AnadirProductoExpress extends AppCompatActivity {
                                     cantIngresar = cantidadNueva;
                                     Thread hilo = new Thread(){
                                         public void run(){
-                                            while(cantIngresar > 0){
-                                                Log.e("cantRestante", String.valueOf(cantIngresar));
-                                            }
+                                            while(cantIngresar > 0){}
                                             dialogIngresarProd.dismiss();
                                         }
                                     };
@@ -474,8 +478,12 @@ public class AnadirProductoExpress extends AppCompatActivity {
                         if (! listaProductos.isEmpty() ) {
                             if (listaProductos.get(pos).getNombre().equals(nombreProducto)) {
                                 Toast.makeText(AnadirProductoExpress.this, "Se quitara el producto " + nombreProducto, Toast.LENGTH_SHORT).show();
-                                precioParcial.setText(String.valueOf(Integer.valueOf(precioParcial.getText().toString()) - listaProductos.get(pos).getTotalPorProducto()));
-                                listaProductos.remove(pos);
+                                precioParcial.setText(String.valueOf(Integer.valueOf(precioParcial.getText().toString()) - listaProductos.get(pos).getPrecio()));
+                                if(listaProductos.get(pos).getCantidad() > 1 ){
+                                    listaProductos.get(pos).setCantidad(listaProductos.get(pos).getCantidad() - 1 );
+                                }else {
+                                    listaProductos.remove(pos);
+                                }
                                 adaptator.notifyDataSetChanged();
                             }
                         }
@@ -487,9 +495,14 @@ public class AnadirProductoExpress extends AppCompatActivity {
                     refreshActivity.putExtra("btInstance", bluetoothInstance);
                     startActivity(refreshActivity);
                     //DESCOMENTAR
-                    // this.finish();
+                    qrAbierto = false;
+                    this.finish();
             }
         }
+
+        qrAbierto = false;
+
+
     }
 
     private void anadirProducto(Producto producto){
@@ -546,6 +559,12 @@ public class AnadirProductoExpress extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        prevX = 0;
     }
 
     @Override
