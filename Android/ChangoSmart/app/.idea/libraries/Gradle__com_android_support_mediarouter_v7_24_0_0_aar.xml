@@ -1,12 +1,12 @@
 <component name="libraryTable">
   <library name="Gradle: com.android.support:mediarouter-v7:24.0.0@aar">
     <ANNOTATIONS>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/8b73310337020cae85510d0dcc1cbd64/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/1b0e9e38589dace83b88085844d6813e/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/8b73310337020cae85510d0dcc1cbd64/jars/classes.jar!/" />
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/8b73310337020cae85510d0dcc1cbd64/jars/libs/internal_impl-24.0.0.jar!/" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/8b73310337020cae85510d0dcc1cbd64/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/1b0e9e38589dace83b88085844d6813e/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/1b0e9e38589dace83b88085844d6813e/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/1b0e9e38589dace83b88085844d6813e/jars/libs/internal_impl-24.0.0.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

@@ -184,8 +184,6 @@ public class BluetoothConnectionService {
     public void startClient(BluetoothDevice device, UUID uuid){
         Log.d(TAG, "StartClient: Iniciado.");
 
-        //Inicialización del progressDialog.
-        //myProgressDialog = ProgressDialog.show(myContext, "Conectando bluetooth", "Por favor espere...", true);
 
         myConnectThread = new ConnectThread(device, uuid);
         myConnectThread.start();
@@ -205,12 +203,6 @@ public class BluetoothConnectionService {
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
 
-            //Se quita el progress cuando la conexión está establecida.
-            //try{
-                //myProgressDialog.dismiss();
-            //}catch (NullPointerException e){
-                //e.printStackTrace();
-            //}
 
 
             //Se le asignan los streams correspondientes del socket, tanto para input como para output.

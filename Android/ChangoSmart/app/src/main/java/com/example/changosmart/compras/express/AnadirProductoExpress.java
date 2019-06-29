@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.hardware.SensorManager;
 import android.os.Bundle;
@@ -45,14 +46,14 @@ import static java.lang.StrictMath.abs;
 public class AnadirProductoExpress extends AppCompatActivity {
     public static final int REQUEST_CODE_QR = 1010;
     public static final int REQUEST_CODE_QR_QUITAR = 1111;
-
+    private boolean qrAbierto = false;
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private MiAdaptadorListaProductosExpress adaptator;
     private static ArrayList<Producto> listaProductos;
     private TextView precioParcial;
     private TextView temperaturaTextView;
-    private int cantIngresar;
+    private volatile int cantIngresar;
 
     private Bluetooth bluetoothInstance;
 
@@ -86,8 +87,6 @@ public class AnadirProductoExpress extends AppCompatActivity {
         //Se instancia el bluetooth en base a la conexión actual
         bluetoothInstance = Objects.requireNonNull(getIntent().getExtras()).getParcelable("btInstance");
 
-
-
         //Se verifica que se tenga una conexión activa de bluetooth.
         if (bluetoothInstance != null){
             //Se inicia el socket del bt para escuchar mensajes del arduino.
@@ -95,7 +94,7 @@ public class AnadirProductoExpress extends AppCompatActivity {
             if (bluetoothInstance.getPairDevice() != null){
                 bluetoothConnection.startClient( bluetoothInstance.getPairDevice(), bluetoothConnection.getDeviceUUID());
                 //Registro el evento del broadcast para detectar el provider que genera la lectura de un dato enviado por el arduino (BluetoothServiceConnection)
-                LocalBroadcastManager.getInstance(this).registerReceiver(myReceiver, new IntentFilter("IncomingMessage"));
+                LocalBroadcastManager.getInstance(this).registerReceiver(this.myReceiver, new IntentFilter("IncomingMessage"));
             }else {
                 //Se informa al usuario que debe emparejarse con un dispositivo.
                 Toast toast1 =
@@ -106,6 +105,9 @@ public class AnadirProductoExpress extends AppCompatActivity {
                 toast1.show();
             }
         }
+
+
+
 
         //Solo si se detecta sensor.
         if (myAccelerometerSensor != null) {
@@ -234,10 +236,14 @@ public class AnadirProductoExpress extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (bluetoothInstance.getPairDevice() != null) {
-                    Intent openQr = new Intent(AnadirProductoExpress.this, QR.class);
-                    openQr.putExtra("btInstance", bluetoothInstance);
-                    // se abre la vista de la camara para escanear el código qr y agregar el producto.
-                    startActivityForResult(openQr, REQUEST_CODE_QR);
+                    if(qrAbierto == false) {
+                        qrAbierto = true;
+                        Intent openQr = new Intent(AnadirProductoExpress.this, QR.class);
+                        openQr.putExtra("btInstance", bluetoothInstance);
+                        // se abre la vista de la camara para escanear el código qr y agregar el producto.
+                        startActivityForResult(openQr, REQUEST_CODE_QR);
+
+                    }
                 } else {
                     //Se informa al usuario que debe emparejarse con un dispositivo.
                     Toast toast1 =
@@ -311,11 +317,11 @@ public class AnadirProductoExpress extends AppCompatActivity {
             String text = intent.getStringExtra("theMessage");
             Log.e("Entrada", text );
             if (text.equals("E")){
+                cantIngresar--;
                 Toast toast1 =
-                        Toast.makeText(getApplicationContext(), "Ingresó un producto al chango." , Toast.LENGTH_SHORT);
+                        Toast.makeText(getApplicationContext(), "Ingresó un producto al chango. Restan "+ cantIngresar , Toast.LENGTH_SHORT);
 
                 toast1.setGravity(Gravity.CENTER,0,0);
-                cantIngresar--;
                 toast1.show();
             }else if (text.equals("O")){
                 Toast toast1 =
@@ -323,9 +329,13 @@ public class AnadirProductoExpress extends AppCompatActivity {
                 toast1.setGravity(Gravity.CENTER,0,0);
                 toast1.show();
 
-                Intent openQr = new Intent(AnadirProductoExpress.this, QR.class);
-                openQr.putExtra("btInstance", bluetoothInstance);
-                startActivityForResult(openQr, REQUEST_CODE_QR_QUITAR);
+                if(qrAbierto == false){
+                    qrAbierto = true;
+                    Intent openQr = new Intent(AnadirProductoExpress.this, QR.class);
+                    openQr.putExtra("btInstance", bluetoothInstance);
+                    startActivityForResult(openQr, REQUEST_CODE_QR_QUITAR);
+                }
+
 
 
             }else if (text.matches("[0-9]")){
@@ -359,9 +369,12 @@ public class AnadirProductoExpress extends AppCompatActivity {
 
                 if (mAccel > 15 && abs(abs(x)-abs(prevX))>=20 ) {
                     prevX=x;
-                    Intent openQr = new Intent(AnadirProductoExpress.this, QR.class);
-                    openQr.putExtra("btInstance", bluetoothInstance);
-                    startActivityForResult(openQr, REQUEST_CODE_QR);
+                    if(qrAbierto == false) {
+                        qrAbierto = true;
+                        Intent openQr = new Intent(AnadirProductoExpress.this, QR.class);
+                        openQr.putExtra("btInstance", bluetoothInstance);
+                        startActivityForResult(openQr, REQUEST_CODE_QR);
+                    }
                 }
             }
         }
@@ -413,18 +426,19 @@ public class AnadirProductoExpress extends AppCompatActivity {
                                     }
                                     dialog.dismiss();
 
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(AnadirProductoExpress.this);
+                                    final AlertDialog.Builder builder = new AlertDialog.Builder(AnadirProductoExpress.this);
                                     builder.setTitle("Ingrese el producto al chango\n");
-                                    AlertDialog dialogIngresarProd = builder.create();
-                                    // DESCOMENTAR ACA
+                                    final AlertDialog dialogIngresarProd = builder.create();
                                     dialogIngresarProd.setCancelable(false);
                                     dialogIngresarProd.setCanceledOnTouchOutside(false);
                                     dialogIngresarProd.show();
                                     cantIngresar = cantidadNueva;
                                     Thread hilo = new Thread(){
                                         public void run(){
-                                            while(cantIngresar > 0){}
-                                            dialog.dismiss();
+                                            while(cantIngresar > 0){
+                                                Log.e("cantRestante", String.valueOf(cantIngresar));
+                                            }
+                                            dialogIngresarProd.dismiss();
                                         }
                                     };
                                     hilo.start();
@@ -444,6 +458,7 @@ public class AnadirProductoExpress extends AppCompatActivity {
                     }else{
                         Toast.makeText(this, "Este producto no se encuentra registrado en el sistema.", Toast.LENGTH_SHORT).show();
                     }
+                    qrAbierto = false;
                 break;
                 case REQUEST_CODE_QR_QUITAR:
                     if ( ! reinicioLista ) {
@@ -465,12 +480,14 @@ public class AnadirProductoExpress extends AppCompatActivity {
                             }
                         }
                     }
+                    qrAbierto = false;
                 break;
                 default:
                     Intent refreshActivity = new Intent(this, AnadirProductoExpress.class);
                     refreshActivity.putExtra("btInstance", bluetoothInstance);
                     startActivity(refreshActivity);
-                    this.finish();
+                    //DESCOMENTAR
+                    // this.finish();
             }
         }
     }
@@ -484,14 +501,6 @@ public class AnadirProductoExpress extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.d("", "[OnDestoy]: Dejo de verificar por los receivers");
-        try {
-            unregisterReceiver(myReceiver);
-        }catch(Exception ex){}
-    }
 
     @Override
     public void onBackPressed() {
@@ -515,6 +524,7 @@ public class AnadirProductoExpress extends AppCompatActivity {
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
+                                            // DESCOMENTAR
                                             finish();
                                         }
                                     });
@@ -525,8 +535,28 @@ public class AnadirProductoExpress extends AppCompatActivity {
                         }
                     });
             builder.show();
-        }else {
-            super.onBackPressed();
+
+        } else {
+            finish();
         }
+    }
+
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.e("AnadirProductoExpress", "DESTRUIDO");
+        try {
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(this.myReceiver);
+        }catch(Exception ex){
+            Log.e("Error unregister", ex.getMessage());
+            Log.e("Error unregister", "Error al desuscbiribrseaseasd");
+        }
+        super.onDestroy();
     }
 }

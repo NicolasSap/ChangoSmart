@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.example.changosmart.MainActivity;
 import com.example.changosmart.R;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 import BT.Bluetooth;
@@ -318,11 +319,23 @@ public class BluetoothSettings extends AppCompatActivity implements AdapterView.
 
         //Creamos un bond para el receiver.
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            Log.d("", "[OnDeviceClick]: Inicializando paring con el dispositivo: " + deviceName);
-            listaDispositivos.get(i).createBond();
 
-            //Le asigno el dispositivo emparejado a la instancia del bt.
-            bluetoothLocalInstance.setPairDevice(listaDispositivos.get(i));
+            if ( listaDispositivos.get(i).getBondState() == BluetoothDevice.BOND_BONDED ){
+                //Le asigno el dispositivo emparejado a la instancia del bt.
+                bluetoothLocalInstance.setPairDevice(listaDispositivos.get(i));
+
+                Log.d("", "[BroadcasReceiver]: Emparejado");
+                mostrarNotificacionBT("Emparejamiento existoso!");
+                conectadoADispositivo.setText(listaDispositivos.get(i).getName().isEmpty() ? "Nombre protegido" : listaDispositivos.get(i).getName());
+                emparejamientoExitoso = true;
+
+            }else {
+                Log.d("", "[OnDeviceClick]: Inicializando paring con el dispositivo: " + deviceName);
+                listaDispositivos.get(i).createBond();
+
+                //Le asigno el dispositivo emparejado a la instancia del bt.
+                bluetoothLocalInstance.setPairDevice(listaDispositivos.get(i));
+            }
         }
     }
 }

@@ -306,11 +306,11 @@ public class Chango extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         Log.d("", "[OnDestoy]: Dejo de verificar por los receivers");
         try {
             unregisterReceiver(myReceiver);
-        }catch(Exception ex){}
+        }catch(Exception ex){ }
+        super.onDestroy();
     }
 
     @Override
