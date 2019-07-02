@@ -116,11 +116,7 @@ public class BluetoothConnectionService {
             Log.d(TAG, "ConnectThread: comenzado.");
             myDevice = device;
             deviceUUID = uuid;
-        }
-
-        public void run(){
             BluetoothSocket tmp = null;
-            Log.i(TAG, "EJECUTANDO myConnectThread.");
 
             //Se obtiene un BluetoothSocket para la conexión con el dispositivo BluetoothDevice.
             try{
@@ -132,6 +128,10 @@ public class BluetoothConnectionService {
 
             //Asigno el socket obtenido
             mySocket = tmp;
+        }
+
+        public void run(){
+            Log.i(TAG, "EJECUTANDO myConnectThread.");
 
             //Siempre se debe cancelar la búsqueda para ahorrar recursos
             myBluetoothAdapter.cancelDiscovery();
@@ -240,7 +240,7 @@ public class BluetoothConnectionService {
                     LocalBroadcastManager.getInstance(myContext).sendBroadcast(incomingMessageIntent);
 
                 } catch (Exception e) {
-                    Log.e(TAG, "write: Error al recibir el mensaje. " + e.getMessage() );
+                    Log.e(TAG, "READ: Error al recibir el mensaje. " + e.getMessage() );
                     //Es importante cortar con el break el ciclo.
                     break;
                 }
