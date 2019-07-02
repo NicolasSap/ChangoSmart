@@ -118,7 +118,7 @@
         app:layout_constraintEnd_toStartOf="@+id/moveChartCompraExpress"
         app:layout_constraintStart_toEndOf="@+id/qr"
         app:layout_constraintTop_toBottomOf="@+id/listViewProductosExpress"
-        app:layout_constraintVertical_bias="0.597"
+        app:layout_constraintVertical_bias="1.0"
         tools:text="Finalizar Compra" />
 
     <android.support.design.widget.FloatingActionButton
@@ -134,7 +134,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/listViewProductosExpress"
-        app:srcCompat="@drawable/qrcode" />
+        app:srcCompat="@drawable/qrcode"
+        app:layout_constraintVertical_bias="1.0" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/moveChartCompraExpress"
@@ -151,7 +152,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/listViewProductosExpress"
-        app:srcCompat="@drawable/steering" />
+        app:srcCompat="@drawable/steering"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/textViewTemperatura"

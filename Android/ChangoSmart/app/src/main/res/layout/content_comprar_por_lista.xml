@@ -26,11 +26,14 @@
     <ListView
         android:id="@+id/listViewAComprarCompraLista"
         android:layout_width="392dp"
-        android:layout_height="195dp"
+        android:layout_height="155dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
         android:divider="@android:color/black"
         android:dividerHeight="2dp"
+        app:layout_constraintBottom_toTopOf="@+id/textViewListaLineaComprarLista2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.4"
         app:layout_constraintStart_toStartOf="parent"
@@ -113,6 +116,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="32dp"
+        android:layout_marginBottom="8dp"
         android:text="Articulos a Comprar"
         android:textAlignment="center"
         android:textStyle="bold"
@@ -170,17 +174,19 @@
 
     <TextView
         android:id="@+id/textViewTemperatura"
-        android:layout_width="87dp"
+        android:layout_width="50dp"
         android:layout_height="25dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:text="Temperatura"
+        android:text="Temp"
         app:layout_constraintBottom_toBottomOf="@+id/textViewListaLineaComprarLista"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.781"
         app:layout_constraintStart_toEndOf="@+id/textViewListaLineaComprarLista"
-        app:layout_constraintTop_toBottomOf="@+id/textViewCompraListaTotalParcial" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewCompraListaTotalParcial"
+        app:layout_constraintVertical_bias="0.0" />
 
 
 </android.support.constraint.ConstraintLayout>
