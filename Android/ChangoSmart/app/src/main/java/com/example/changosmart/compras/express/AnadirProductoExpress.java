@@ -47,6 +47,7 @@ public class AnadirProductoExpress extends AppCompatActivity {
     public static final int REQUEST_CODE_QR = 1010;
     public static final int REQUEST_CODE_QR_QUITAR = 1111;
     private boolean qrAbierto = false;
+    private boolean manejoAbierto = false;
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private MiAdaptadorListaProductosExpress adaptator;
@@ -287,6 +288,7 @@ public class AnadirProductoExpress extends AppCompatActivity {
                                                 listaProductos.clear();
                                                 adaptator.notifyDataSetChanged();
                                                 dialog.dismiss();
+                                                finish();
                                             }
                                         });
                                 AlertDialog alertDialogFinalizarCompra = builderFinalizarCompra.create();
@@ -300,12 +302,14 @@ public class AnadirProductoExpress extends AppCompatActivity {
         });
 
         FloatingActionButton changoFab = findViewById(R.id.moveChartCompraExpress);
+
         changoFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent openChango = new Intent(AnadirProductoExpress.this, Chango.class);
                 openChango.putExtra("btInstance", bluetoothInstance);
                 // se abre la vista de la camara para escanear el código qr y agregar el producto.
+                manejoAbierto = true;
                 startActivity(openChango);
             }
         });
@@ -342,6 +346,31 @@ public class AnadirProductoExpress extends AppCompatActivity {
             }else if (text.matches("[0-9]")){
                 temperaturaStringBuilder.append(text);
                 if(temperaturaStringBuilder.length() >= 2 ){
+                    // INICIO VERIFICA SI LA TEMP EXCEDE TEMP DE FRIO/CONGELADO
+                    int tempActual = 0;
+                    if (! temperaturaStringBuilder.toString().equals("")) {
+                        tempActual = Integer.valueOf(temperaturaStringBuilder.toString());
+                        Log.e("[tempActual]", temperaturaStringBuilder.toString());
+                    }
+                    boolean congeladoSi = false;
+                    if (tempActual >= 25){
+                        for(Producto prod : listaProductos){
+                            if(prod.getCategoria().equals("Congelado")) {
+                                congeladoSi =  true;
+                                break;
+                            }
+                        }
+                        if (congeladoSi == true) {
+                            Toast toast1 =
+                                    Toast.makeText(getApplicationContext(), "Ingreso un producto que necesita freezer/heladera, puede que se rompa la cadena de frío", Toast.LENGTH_SHORT);
+
+                            toast1.setGravity(Gravity.CENTER, 0, 0);
+
+                            toast1.show();
+                        }
+                    }
+                    // FIN
+                    temperaturaStringBuilder.append("ºC");
                     temperaturaTextView.setText(temperaturaStringBuilder.toString());
                     temperaturaStringBuilder.setLength(0);
                 }
@@ -550,19 +579,83 @@ public class AnadirProductoExpress extends AppCompatActivity {
             builder.show();
 
         } else {
+            Log.e("[onBACKPRESSED:Express]", "Manejo Abierto");
+            try {
+                LocalBroadcastManager.getInstance(this).unregisterReceiver(this.myReceiver);
+            }catch(Exception ex){
+                Log.e("ExpressError unregister", ex.getMessage());
+                Log.e("ExpressError unregister", "Error al unregister");
+            }
+            if (bluetoothInstance.getPairDevice() != null){
+                Log.e("[onBACKPRESSED:Express]", "CANCELANDO THREAD");
+                bluetoothConnection.cancel();
+            }
             finish();
         }
     }
 
+    @Override
+    protected  void onStart() {
+        Log.e("[onStart:Express]", "Estoy Started...");
+        super.onStart();
+    }
 
+    @Override
+    protected  void onRestart() {
+        Log.e("[onRESTART:Express]", "RESTARTING...");
+        if (manejoAbierto == true) {
+            Log.e("[onRESTART:Express]", "Manejo Abierto");
+            if (bluetoothInstance != null){
+                //Se inicia el socket del bt para escuchar mensajes del arduino.
+                bluetoothConnection = new BluetoothConnectionService(getApplicationContext());
+                if (bluetoothInstance.getPairDevice() != null){
+                    bluetoothConnection.startClient( bluetoothInstance.getPairDevice(), bluetoothConnection.getDeviceUUID());
+                    //Registro el evento del broadcast para detectar el provider que genera la lectura de un dato enviado por el arduino (BluetoothServiceConnection)
+                    LocalBroadcastManager.getInstance(this).registerReceiver(this.myReceiver, new IntentFilter("IncomingMessage"));
+                }else {
+                    //Se informa al usuario que debe emparejarse con un dispositivo.
+                    Toast toast1 =
+                            Toast.makeText(getApplicationContext(), "No estás conectado a ningún dispositivo. Conectate vía bluetooth por favor..." , Toast.LENGTH_SHORT);
+
+                    toast1.setGravity(Gravity.CENTER,0,0);
+
+                    toast1.show();
+                }
+            }
+            manejoAbierto = false;
+        }
+        super.onRestart();
+    }
+
+    @Override
+    protected  void onPause() {
+        Log.e("[onPause:Express]", "Estoy Paused...");
+        if (manejoAbierto == true) {
+            Log.e("[onPause:Express]", "Manejo Abierto");
+            try {
+                LocalBroadcastManager.getInstance(this).unregisterReceiver(this.myReceiver);
+                Log.e("[onPause:Express]", "UNREGISTER RECEIVER");
+            }catch(Exception ex){
+                Log.e("ExpressError unregister", ex.getMessage());
+                Log.e("ExpressError unregister", "Error al unregister");
+            }
+            if (bluetoothInstance.getPairDevice() != null){
+                bluetoothConnection.cancel();
+                Log.e("[onPause:Express]", "THREAD CANCELADO ");
+            }
+        }
+        super.onPause();
+    }
 
     @Override
     protected void onStop() {
+        Log.e("[onStop:Express]", "Stopping...");
         super.onStop();
     }
 
     @Override
     protected void onResume(){
+        Log.e("[onResume:Express]", "Estoy Resumed..");
         super.onResume();
         prevX = 0;
     }
@@ -574,7 +667,11 @@ public class AnadirProductoExpress extends AppCompatActivity {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(this.myReceiver);
         }catch(Exception ex){
             Log.e("Error unregister", ex.getMessage());
-            Log.e("Error unregister", "Error al desuscbiribrseaseasd");
+            Log.e("Error unregister", "Error al unregister");
+        }
+        if (bluetoothInstance.getPairDevice() != null){
+            Log.e("[onDestroy:Express]", "CANCELANDO THREAD");
+            bluetoothConnection.cancel();
         }
         super.onDestroy();
     }
