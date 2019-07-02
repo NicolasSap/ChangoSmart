@@ -1,5 +1,7 @@
 package com.example.changosmart.listasCompras.detalleListas;
 
+import com.google.android.gms.vision.text.Line;
+
 public class LineaCompra {
     private String nombreProducto,
                     categoria;
@@ -58,5 +60,15 @@ public class LineaCompra {
     @Override
     public String toString() {
         return nombreProducto;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean sonIguales = false;
+        if (obj instanceof LineaCompra){
+            LineaCompra auxiliar = (LineaCompra) obj;
+            sonIguales = this.getNombreProducto().equals(auxiliar.getNombreProducto());
+        }
+        return  sonIguales;
     }
 }
