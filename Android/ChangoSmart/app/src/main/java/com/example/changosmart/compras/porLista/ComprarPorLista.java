@@ -41,8 +41,10 @@ import BT.BluetoothConnectionService;
 
 public class ComprarPorLista extends AppCompatActivity{
     public static final int REQUEST_CODE_QR = 1010;
+    public static final int REQUEST_CODE_QR_QUITAR = 1111;
     private String nombreListaRecibido;
     private ArrayList<LineaCompra> listaProductosAcomprar;
+    private ArrayList<LineaCompra> listaBackupProductos;
     private ArrayList<Producto> listaProductosComprados;
     private ListView listViewProductosAComprar,
                      listViewProductosComprados;
@@ -102,6 +104,7 @@ public class ComprarPorLista extends AppCompatActivity{
 
         // Completo con los productos de la lista ya creada
         listaProductosAcomprar = (ArrayList<LineaCompra>) MainActivity.myAppDatabase.myDao().getDetalleLista(nombreListaRecibido);
+        listaBackupProductos = (ArrayList<LineaCompra>) MainActivity.myAppDatabase.myDao().getDetalleLista(nombreListaRecibido);
         // Inicializo la lista vacia
         listaProductosComprados = new ArrayList<Producto>();
 
@@ -166,8 +169,6 @@ public class ComprarPorLista extends AppCompatActivity{
         });
 
 
-
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -219,6 +220,7 @@ public class ComprarPorLista extends AppCompatActivity{
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 MainActivity.myAppDatabase.myDao().eliminarLista(nombreListaRecibido);
+                                                MainActivity.myAppDatabase.myDao().eliminarDetalleLista(nombreListaRecibido);
                                                 dialog.dismiss();
                                                 finish();
                                             }
@@ -243,6 +245,42 @@ public class ComprarPorLista extends AppCompatActivity{
 
                 // Si pudo ingresar el nuevo producto tengo que esperar a las barreras
                 nuevoProductoAIngresar(data);
+            } else if (requestCode == REQUEST_CODE_QR_QUITAR) {
+                int pos = 0;
+                String nombreProducto = data.getStringExtra("nombreProducto");
+                for (Producto producto : listaProductosComprados) {
+                    if (producto.getNombre().equals(nombreProducto)) {
+                        break;
+                    } else {
+                        pos++;
+                    }
+                }
+                if (! listaProductosComprados.isEmpty() ) {
+                    if (listaProductosComprados.get(pos).getNombre().equals(nombreProducto)) {
+                        Toast.makeText(ComprarPorLista.this, "Se quitara el producto " + nombreProducto, Toast.LENGTH_SHORT).show();
+                        montoParcial.setText(String.valueOf(Integer.valueOf(montoParcial.getText().toString()) - listaProductosComprados.get(pos).getPrecio()));
+                        if (listaProductosComprados.get(pos).getCantidad() > 1 ) {
+                            listaProductosComprados.get(pos).setCantidad(listaProductosComprados.get(pos).getCantidad() - 1 );
+                        } else {
+                            boolean backup = false;
+                            int pos2 = 0;
+                            for (LineaCompra lineaC : listaBackupProductos) {
+                                if (lineaC.getNombreProducto().equals(nombreProducto)) {
+                                    backup = true;
+                                    break;
+                                } else {
+                                    pos2++;
+                                }
+                            }
+                            if (backup == true) {
+                                listaProductosAcomprar.add(listaBackupProductos.get(pos2));
+                                miAdaptadorProdAComprar.notifyDataSetChanged();
+                            }
+                            listaProductosComprados.remove(pos);
+                        }
+                        miAdaptadorProdComprados.notifyDataSetChanged();
+                    }
+                }
             } else {
                 Intent refreshActivity = new Intent(this, ComprarPorLista.class);
                 refreshActivity.putExtra("btInstance", bluetoothInstance);
@@ -287,7 +325,7 @@ public class ComprarPorLista extends AppCompatActivity{
             final View miAlertDialog = LayoutInflater.from(ComprarPorLista.this).inflate(R.layout.alertdialog_producto, null);
             final EditText etCantidad = (EditText) miAlertDialog.findViewById(R.id.editTextCantidadProducto);
             builder.setView(miAlertDialog);
-            final AlertDialog dialog = builder.create();
+            final AlertDialog dialogCantIng = builder.create();
             Button buttonAceptarAlertProducto = (Button) miAlertDialog.findViewById(R.id.buttonAlertDialogProductoAceptar);
 
             buttonAceptarAlertProducto.setOnClickListener(new View.OnClickListener() {
@@ -299,6 +337,11 @@ public class ComprarPorLista extends AppCompatActivity{
                         int cantidadNueva = Integer.valueOf(etCantidad.getText().toString());
                         productoNuevo.setCantidad(cantidadNueva);
                         int cantidadEnLista = getCantidadComprar(productoNuevo.getNombre());
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ComprarPorLista.this);
+                        builder.setTitle("Ingrese el producto al chango\n");
+                        final AlertDialog dialogIngresarProd = builder.create();
+                        dialogIngresarProd.setCancelable(false);
+                        dialogIngresarProd.setCanceledOnTouchOutside(false);
                         if(!listaProductosComprados.contains(productoNuevo)){
                             if (cantidadEnLista >= 1) {
                                 if (cantidadEnLista != cantidadNueva) {
@@ -310,20 +353,27 @@ public class ComprarPorLista extends AppCompatActivity{
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     anadirProducto(productoNuevo);
                                                     dialog.dismiss();
+                                                    dialogCantIng.dismiss();
+                                                    dialogIngresarProd.show();
                                                 }
                                             })
                                             .setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     dialog.dismiss();
+                                                    dialogCantIng.dismiss();
                                                 }
                                             });
                                     builderCantidad.show();
                                 } else {
                                     anadirProducto(productoNuevo);
+                                    dialogCantIng.dismiss();
+                                    dialogIngresarProd.show();
                                 }
                             }else {
                                 anadirProducto(productoNuevo);
+                                dialogCantIng.dismiss();
+                                dialogIngresarProd.show();
                             }
                         } else {
                             int i = 0;
@@ -338,14 +388,9 @@ public class ComprarPorLista extends AppCompatActivity{
                             listaProductosComprados.get(i).sumarCantidadActual(cantidadNueva);
                             montoParcial.setText(String.valueOf(listaProductosComprados.get(i).getTotalPorProducto() + montoTotal));
                             miAdaptadorProdComprados.notifyDataSetChanged();
+                            dialogIngresarProd.show();
                         }
-                        dialog.dismiss();
-                        AlertDialog.Builder builder = new AlertDialog.Builder(ComprarPorLista.this);
-                        builder.setTitle("Ingrese el producto al chango\n");
-                        final AlertDialog dialogIngresarProd = builder.create();
-                        dialogIngresarProd.setCancelable(false);
-                        dialogIngresarProd.setCanceledOnTouchOutside(false);
-                        dialogIngresarProd.show();
+
                         cantIngresar = cantidadNueva;
                         Thread hilo = new Thread(){
                             public void run(){
@@ -363,12 +408,12 @@ public class ComprarPorLista extends AppCompatActivity{
             buttonCancelarAlertProducto.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    dialog.dismiss();
+                    dialogCantIng.dismiss();
                 }
             });
 
 
-            dialog.show();
+            dialogCantIng.show();
             nuevoProductoIngresado = true;
         }else{
             Toast.makeText(ComprarPorLista.this, "El producto scaneado no se encuentra cargado en el sistema.", Toast.LENGTH_LONG).show();
@@ -397,22 +442,54 @@ public class ComprarPorLista extends AppCompatActivity{
             String text = intent.getStringExtra("theMessage");
 
             if (text.equals("E")){
-                Toast toast1 =
-                        Toast.makeText(getApplicationContext(), "Ingresó un producto al chango." , Toast.LENGTH_SHORT);
+                if(cantIngresar > 0) {
+                    cantIngresar--;
+                    Toast toast1 =
+                            Toast.makeText(getApplicationContext(), "Ingresó un producto al chango. Restan " + cantIngresar, Toast.LENGTH_SHORT);
 
-                toast1.setGravity(Gravity.CENTER,0,0);
-                cantIngresar--;
-                toast1.show();
+                    toast1.show();
+                }
             }else if (text.equals("O")){
-                Toast toast1 =
-                        Toast.makeText(getApplicationContext(), "Salió un producto del chango." , Toast.LENGTH_SHORT);
+                if(! listaProductosComprados.isEmpty()) {
+                    Toast toast1 =
+                            Toast.makeText(getApplicationContext(), "Salió un producto del chango.", Toast.LENGTH_SHORT);
 
-                toast1.setGravity(Gravity.CENTER,0,0);
+                    toast1.setGravity(Gravity.CENTER, 0, 0);
 
-                toast1.show();
+                    toast1.show();
+
+                    Intent openQr = new Intent(ComprarPorLista.this, QR.class);
+                    openQr.putExtra("btInstance", bluetoothInstance);
+                    startActivityForResult(openQr, REQUEST_CODE_QR_QUITAR);
+                }
             }else if (text.matches("[0-9]")){
-                temperaturaStringBuilder.append(text.indexOf(0));
+                temperaturaStringBuilder.append(text);
                 if(temperaturaStringBuilder.length() >= 2 ){
+                    // INICIO VERIFICA SI LA TEMP EXCEDE TEMP DE FRIO/CONGELADO
+                    int tempActual = 0;
+                    if (! temperaturaStringBuilder.toString().equals("")) {
+                        tempActual = Integer.valueOf(temperaturaStringBuilder.toString());
+                        Log.e("[tempActual]", temperaturaStringBuilder.toString());
+                    }
+                    boolean congeladoSi = false;
+                    if (tempActual >= 28){
+                        for(Producto prod : listaProductosComprados){
+                            if(prod.getCategoria().equals("Congelado")) {
+                                congeladoSi =  true;
+                                break;
+                            }
+                        }
+                        if (congeladoSi == true) {
+                            Toast toast1 =
+                                    Toast.makeText(getApplicationContext(), "Ingreso un producto que necesita freezer/heladera, puede que se rompa la cadena de frío", Toast.LENGTH_SHORT);
+
+                            toast1.setGravity(Gravity.CENTER, 0, 0);
+
+                            toast1.show();
+                        }
+                    }
+                    // FIN
+                    temperaturaStringBuilder.append("ºC");
                     temperaturaTextView.setText(temperaturaStringBuilder.toString());
                     temperaturaStringBuilder.setLength(0);
                 }
@@ -422,11 +499,15 @@ public class ComprarPorLista extends AppCompatActivity{
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         Log.d("", "[OnDestoy]: Dejo de verificar por los receivers");
         try {
-            unregisterReceiver(myReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(this.myReceiver);
         }catch(Exception ex){}
+        if (bluetoothInstance.getPairDevice() != null){
+            Log.e("[onDestroy:Lista]", "CANCELANDO THREAD");
+            bluetoothConnection.cancel();
+        }
+        super.onDestroy();
     }
     
     @Override
@@ -453,6 +534,7 @@ public class ComprarPorLista extends AppCompatActivity{
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             MainActivity.myAppDatabase.myDao().eliminarLista(nombreListaRecibido);
+                                            MainActivity.myAppDatabase.myDao().eliminarDetalleLista(nombreListaRecibido);
                                             dialog.dismiss();
                                             finish();
                                         }
@@ -465,7 +547,18 @@ public class ComprarPorLista extends AppCompatActivity{
                     });
             builder.show();
         }else{
-            super.onBackPressed();
+            Log.e("[onBACKPRESSED:Express]", "Manejo Abierto");
+            try {
+                LocalBroadcastManager.getInstance(this).unregisterReceiver(this.myReceiver);
+            }catch(Exception ex){
+                Log.e("ExpressError unregister", ex.getMessage());
+                Log.e("ExpressError unregister", "Error al unregister");
+            }
+            if (bluetoothInstance.getPairDevice() != null){
+                Log.e("[onBACKPRESSED:Express]", "CANCELANDO THREAD");
+                bluetoothConnection.cancel();
+            }
+            finish();
         }
     }
 }
