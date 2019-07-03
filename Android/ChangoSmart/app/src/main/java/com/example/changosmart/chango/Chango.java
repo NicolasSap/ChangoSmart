@@ -218,7 +218,7 @@ public class Chango extends AppCompatActivity {
             toast1.show();
             byte[] commandInBytes = String.valueOf(direccionMovimiento).getBytes(Charset.defaultCharset());
 
-            bluetoothConnection.write(commandInBytes);
+            bluetoothConnection.myConnectedThread.write(commandInBytes);
         }
     }
 
@@ -302,7 +302,7 @@ public class Chango extends AppCompatActivity {
         }catch(Exception ex){}
         if (bluetoothInstance.getPairDevice() != null){
             Log.e("[onBACKPRESSED:Chango]", "CANCELANDO THREAD");
-            bluetoothConnection.cancel();
+            bluetoothConnection.myConnectedThread.cancel();
         }
         mySensorManager.unregisterListener(lightSensorEventListener);
         mySensorManager.unregisterListener(proximitySensorEventListener);

@@ -588,7 +588,7 @@ public class AnadirProductoExpress extends AppCompatActivity {
             }
             if (bluetoothInstance.getPairDevice() != null){
                 Log.e("[onBACKPRESSED:Express]", "CANCELANDO THREAD");
-                bluetoothConnection.cancel();
+                bluetoothConnection.myConnectedThread.cancel();
             }
             finish();
         }
@@ -640,7 +640,7 @@ public class AnadirProductoExpress extends AppCompatActivity {
                 Log.e("ExpressError unregister", "Error al unregister");
             }
             if (bluetoothInstance.getPairDevice() != null){
-                bluetoothConnection.cancel();
+                bluetoothConnection.myConnectedThread.cancel();
                 Log.e("[onPause:Express]", "THREAD CANCELADO ");
             }
         }
@@ -671,7 +671,7 @@ public class AnadirProductoExpress extends AppCompatActivity {
         }
         if (bluetoothInstance.getPairDevice() != null){
             Log.e("[onDestroy:Express]", "CANCELANDO THREAD");
-            bluetoothConnection.cancel();
+            bluetoothConnection.myConnectedThread.cancel();
         }
         super.onDestroy();
     }

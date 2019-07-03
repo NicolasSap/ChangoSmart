@@ -42,7 +42,7 @@ public class MisListas extends AppCompatActivity {
         // Devuelve interface LIST, por eso lo casteo a ArrayList
         misListasCompras = (ArrayList<ListaCompra>) MainActivity.myAppDatabase.myDao().getListaCompras();
 
-        final ListView listaComprasView = (ListView) findViewById(R.id.listViewMisListas);
+        final ListView listaComprasView = findViewById(R.id.listViewMisListas);
 
         //Creamos un Adaptador para mostrarlo por la vista
         adaptador = new MiAdaptadorListaCompras(this, misListasCompras);
@@ -107,7 +107,7 @@ public class MisListas extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Devuelve interface LIST, por eso lo casteo a ArrayList
-        misListasCompras = (ArrayList) MainActivity.myAppDatabase.myDao().getListaCompras();
+        misListasCompras = (ArrayList<ListaCompra>) MainActivity.myAppDatabase.myDao().getListaCompras();
         adaptador.setListaProductos(misListasCompras);
         adaptador.notifyDataSetChanged();
     }
@@ -115,7 +115,7 @@ public class MisListas extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        misListasCompras = (ArrayList) MainActivity.myAppDatabase.myDao().getListaCompras();
+        misListasCompras = (ArrayList<ListaCompra>) MainActivity.myAppDatabase.myDao().getListaCompras();
         adaptador.setListaProductos(misListasCompras);
         adaptador.notifyDataSetChanged();
     }
@@ -131,11 +131,6 @@ public class MisListas extends AppCompatActivity {
         }
     }
 
-    /**
-     * Elimina lista de compra de la base de datos
-     * @param view
-     * @param pos
-     */
     private void eliminarListaCompra(final View view, final int pos){
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
 

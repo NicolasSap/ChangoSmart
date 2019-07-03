@@ -13,6 +13,9 @@ import android.util.Log;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Queue;
+import java.util.Stack;
 import java.util.UUID;
 
 //Clase helper que brinda servicios de comunicación (envío/recepción) de información con otros dispositivos bt vía threads.
@@ -35,7 +38,7 @@ public class BluetoothConnectionService {
 
     private ConnectThread myConnectThread;
 
-    private ConnectedThread myConnectedThread;
+    public ConnectedThread myConnectedThread;
 
     private BluetoothDevice myDevice;
 
@@ -195,15 +198,13 @@ public class BluetoothConnectionService {
         private final InputStream myInStream;
         private final OutputStream myOutStream;
 
-        private ConnectedThread(BluetoothSocket socket) {
+        public ConnectedThread(BluetoothSocket socket) {
             Log.d(TAG, "ConnectedThread: Iniciado.");
 
             myLocalSocket = socket;
 
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
-
-
 
             //Se le asignan los streams correspondientes del socket, tanto para input como para output.
             try {
@@ -248,7 +249,7 @@ public class BluetoothConnectionService {
         }
 
         //Se llama a este método desde el activity para enviar información al dispositivo conectado.
-        private void write(byte[] bytes) {
+        public void write(byte[] bytes) {
             String text = new String(bytes, Charset.defaultCharset());
             Log.d(TAG, "write: Escribiendo mensaje obtenido: " + text);
             try {
@@ -273,23 +274,5 @@ public class BluetoothConnectionService {
         // Se inicializa el thread para gestionar las operaciones de stream.
         myConnectedThread = new ConnectedThread(mySocket);
         myConnectedThread.start();
-    }
-
-    //Método que cierra la conexión.
-    public void cancel(){
-        Log.d(TAG, "cancel: Canceling socket.");
-
-        myConnectedThread.cancel();
-    }
-
-    //Método que realiza la escritura de la información.
-    public void write(byte[] out) {
-        //Se crea un objeto temporal
-        ConnectedThread r;
-
-        // Se sincronizan las copias de ConnectedThread
-        Log.d(TAG, "write: Write llamado.");
-        //Realiza la escritura
-        myConnectedThread.write(out);
     }
 }
