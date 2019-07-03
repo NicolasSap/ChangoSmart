@@ -37,6 +37,16 @@ public class Chango extends AppCompatActivity {
 
     private Button buttonLeft;
 
+    private final char stop = 'S';
+    private final char avanzar = 'A';
+    private final char retroceder = 'B';
+    private final char izquierda = 'I';
+    private final char derecha = 'D';
+    private final char forward = 'F';
+    private final char go = 'G';
+    private final char no_go = 'N';
+    private final char led_front = 'L';
+
     private char establecerComandoMovimiento;
 
     private char establecerComandoLuz;
@@ -99,8 +109,8 @@ public class Chango extends AppCompatActivity {
         }
 
         //Se establecen los comandos iniciales para el embebido
-        establecerComandoMovimiento = 'S';
-        establecerComandoMovimientoServo = 'F';
+        establecerComandoMovimiento = stop;
+        establecerComandoMovimientoServo = forward;
 
         //Si se presiona el boton avanzar
         buttonUp.setOnClickListener(new View.OnClickListener() {
@@ -108,16 +118,16 @@ public class Chango extends AppCompatActivity {
             public void onClick(View view) {
                 //Asigno la variable que va a recibir el embebido según el movimiento que quiero hacer.
                 //Si el estado anterior era una A, significa que debe detenerse ( S ), sino, avance (A)
-                if ( establecerComandoMovimiento == 'S') {
-                    establecerComandoMovimiento = 'A';
+                if ( establecerComandoMovimiento == stop) {
+                    establecerComandoMovimiento = avanzar;
                     enviarInformacionMovimiento(establecerComandoMovimiento);
-                    establecerComandoMovimientoServo = 'F';
+                    establecerComandoMovimientoServo = forward;
                     enviarInformacionMovimiento(establecerComandoMovimientoServo);
-                } else if ( establecerComandoMovimiento == 'B') {
-                    establecerComandoMovimiento = 'S';
+                } else if ( establecerComandoMovimiento == retroceder) {
+                    establecerComandoMovimiento = stop;
                     enviarInformacionMovimiento(establecerComandoMovimiento);
-                } else if ( establecerComandoMovimientoServo == 'I' || establecerComandoMovimientoServo == 'D') {
-                    establecerComandoMovimientoServo = 'F';
+                } else if ( establecerComandoMovimientoServo == izquierda || establecerComandoMovimientoServo == derecha) {
+                    establecerComandoMovimientoServo = forward;
                     enviarInformacionMovimiento(establecerComandoMovimientoServo);
                 }
             }
@@ -128,7 +138,7 @@ public class Chango extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Asigno la variable que va a recibir el embebido según el movimiento que quiero hacer.
-                establecerComandoMovimientoServo = 'I';
+                establecerComandoMovimientoServo = izquierda;
                 enviarInformacionMovimiento(establecerComandoMovimientoServo);
             }
         });
@@ -139,16 +149,16 @@ public class Chango extends AppCompatActivity {
             public void onClick(View view) {
                 //Asigno la variable que va a recibir el embebido según el movimiento que quiero hacer.
                 //Si el estado anterior era una A, significa que debe detenerse ( S ), sino, retrocedo (b)
-                if ( establecerComandoMovimiento == 'S') {
-                    establecerComandoMovimiento = 'B';
+                if ( establecerComandoMovimiento == stop) {
+                    establecerComandoMovimiento = retroceder;
                     enviarInformacionMovimiento(establecerComandoMovimiento);
-                    establecerComandoMovimientoServo = 'F';
+                    establecerComandoMovimientoServo = forward;
                     enviarInformacionMovimiento(establecerComandoMovimientoServo);
-                } else if ( establecerComandoMovimiento == 'A') {
-                    establecerComandoMovimiento = 'S';
+                } else if ( establecerComandoMovimiento == avanzar) {
+                    establecerComandoMovimiento = stop;
                     enviarInformacionMovimiento(establecerComandoMovimiento);
-                } else if ( establecerComandoMovimientoServo == 'I' || establecerComandoMovimientoServo == 'D') {
-                    establecerComandoMovimientoServo = 'F';
+                } else if ( establecerComandoMovimientoServo == izquierda || establecerComandoMovimientoServo == derecha) {
+                    establecerComandoMovimientoServo = forward;
                     enviarInformacionMovimiento(establecerComandoMovimientoServo);
                 }
             }
@@ -159,7 +169,7 @@ public class Chango extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //Asigno la variable que va a recibir el embebido según el movimiento que quiero hacer.
-                establecerComandoMovimientoServo = 'D';
+                establecerComandoMovimientoServo = derecha;
                 enviarInformacionMovimiento(establecerComandoMovimientoServo);
             }
         });
@@ -174,31 +184,17 @@ public class Chango extends AppCompatActivity {
             Log.d("temperatura",text);
 
             //Si recibe avanzar habilite el avance.
-            if (text.equals("G")){
+            if (text.equals(go)){
                 buttonUp.setVisibility(View.VISIBLE);
                 buttonUp.setBackgroundColor(getResources().getColor(R.color.mainTitlesColor));
 
-                Toast toast1 =
-                        Toast.makeText(getApplicationContext(), "ME PUEDO MOVER", Toast.LENGTH_SHORT);
-
-                toast1.setGravity(Gravity.CENTER,0,0);
-
-                toast1.show();
-
                 //Si recibe no avanzar, deshabilite el avance y envie un freno al embebido.
-            }else if (text.equals("N")){
+            }else if (text.equals(no_go)){
                 buttonUp.setVisibility(View.INVISIBLE);
                 buttonUp.setBackgroundColor(Color.LTGRAY);
                 //Seteo variables (la accion la hace el arduino).
-                establecerComandoMovimiento = 'S';
-                establecerComandoMovimientoServo = 'F';
-
-                Toast toast1 =
-                        Toast.makeText(getApplicationContext(), "ULTRASONIDO ACTIVADO", Toast.LENGTH_SHORT);
-
-                toast1.setGravity(Gravity.CENTER,0,0);
-
-                toast1.show();
+                establecerComandoMovimiento = stop;
+                establecerComandoMovimientoServo = forward;
             }
         }
     };
@@ -236,13 +232,13 @@ public class Chango extends AppCompatActivity {
         public void onSensorChanged(SensorEvent event) {
             // TODO Auto-generated method stub
             if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
-                if (establecerComandoMovimiento != 'S') {
+                if (establecerComandoMovimiento != stop) {
                     if (event.values[0] == 0) {
                         //El sensor detecta algo próximo
                         //Envía un mensaje al arduino para que frene.
-                        establecerComandoMovimiento = 'S';
+                        establecerComandoMovimiento = stop;
                         enviarInformacionMovimiento(establecerComandoMovimiento);
-                        establecerComandoMovimientoServo = 'F';
+                        establecerComandoMovimientoServo = forward;
                         enviarInformacionMovimiento(establecerComandoMovimientoServo);
 
                         Toast toast1 =
@@ -283,7 +279,7 @@ public class Chango extends AppCompatActivity {
                     //El sensor no detecta luz y estaba apagada la luz del carrito
                     prevLuz=event.values[0];
                     //Encender luz carrito
-                    establecerComandoLuz = 'L';
+                    establecerComandoLuz = led_front;
                     enviarInformacionMovimiento(establecerComandoLuz);
                 } else {
                     if (event.values[0] >= 10 && prevLuz < 10) {
@@ -291,7 +287,7 @@ public class Chango extends AppCompatActivity {
                         prevLuz=event.values[0];
                         //prevLuz = 15;
                         //Apagar luz carrito
-                        establecerComandoLuz = 'L';
+                        establecerComandoLuz = led_front;
                         enviarInformacionMovimiento(establecerComandoLuz);
                     }
                 }
