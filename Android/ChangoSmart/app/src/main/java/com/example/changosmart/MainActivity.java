@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     public static MyAppDatabase myAppDatabase;
     private boolean primeraEjecucion = false;
     private Bluetooth bluetoothInstance;
+    private static final int resultBtSetting = 17;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent btSettings = new Intent( view.getContext(), BluetoothSettings.class);
                 //Le paso la instancia del bluetooth para que tenga los valores.
                 btSettings.putExtra("btInstance", bluetoothInstance);
-                startActivityForResult(btSettings, 17);
+                startActivityForResult(btSettings, resultBtSetting);
             }
         });
 
@@ -130,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 17) {
+        if (requestCode == resultBtSetting) {
             if(resultCode == RESULT_OK) {
                 bluetoothInstance = Objects.requireNonNull(data.getExtras()).getParcelable("btInstanceBack");
                 Toast toast =
