@@ -505,7 +505,7 @@ public class ComprarPorLista extends AppCompatActivity{
         }catch(Exception ex){}
         if (bluetoothInstance.getPairDevice() != null){
             Log.e("[onDestroy:Lista]", "CANCELANDO THREAD");
-            bluetoothConnection.myConnectedThread.cancel();
+            bluetoothConnection.cancel();
         }
         super.onDestroy();
     }
@@ -556,7 +556,7 @@ public class ComprarPorLista extends AppCompatActivity{
             }
             if (bluetoothInstance.getPairDevice() != null){
                 Log.e("[onBACKPRESSED:Express]", "CANCELANDO THREAD");
-                bluetoothConnection.myConnectedThread.cancel();
+                bluetoothConnection.cancel();
             }
             finish();
         }
