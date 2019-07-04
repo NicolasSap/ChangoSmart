@@ -257,7 +257,7 @@ public class BluetoothConnectionService {
 
                     //Se espera una cantidad de 2 segundo para que se llene el buffer en caso de que haya algo.
                     try{
-                        Thread.sleep(2000);
+                        Thread.sleep(600);
                     }catch(Exception e){
                         Log.e(TAG, "READ: Error al recibir el mensaje. " + e.getMessage() );
                     }
